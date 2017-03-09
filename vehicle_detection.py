@@ -127,9 +127,7 @@ def draw_car_box(image, labels):
     return image
 
 #Pipeline detect vehicle in image
-n = 15 #Number of current frames
-# car_topLeft = [deque(maxlen=n) for x in range(10)]
-# car_lowRight = [deque(maxlen=n)for x in range(10)]
+n = 30 #Number of current frames
 heatmap_queue = deque(maxlen=n)
 def pipeline(image):
 	ystart = 400
@@ -140,7 +138,9 @@ def pipeline(image):
 		car_boxes.extend(find_cars(image, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins = nbins))
 	heat = np.zeros_like(image[:,:,0]).astype(np.float)
 	heat = add_heat(heat, car_boxes)
-# 	heat = heat_threshold(heat,3)
+
+	heat = heat_threshold(heat,1)
+	# heatmap = np.clip(heat,0,255)
 	#Taking average of current n frames
 	heatmap_queue.append(heat)
 	heatmap_list = list(heatmap_queue)
@@ -148,8 +148,8 @@ def pipeline(image):
 	for i in heatmap_list:
 		heatmap = heatmap + np.array(i)
 		
-	heatmap = heat_threshold(heatmap, 15)
-	
+	heatmap = heat_threshold(heatmap, 22)
+
 	labels = label(heat)
 	draw_img = np.copy(image)
 
@@ -160,24 +160,12 @@ def pipeline(image):
         #Find current top left and low right coordinates of current vehicle
 		topLeft_current = (np.min(car_x),np.min(car_y))
 		lowRight_current = (np.max(car_x),np.max(car_y))
-#         #Add current coordinates into list of current frames
-# 		car_topLeft[car_number].append(topLeft_current)
-# 		car_lowRight[car_number].append(lowRight_current)
-# 		box_left = list(car_topLeft[car_number])
-# 		box_right = list(car_lowRight[car_number])
-# 		m = len(box_left)
-#         #Average coordinates of current n frames
-# 		top_left = (sum (k[0] for k in box_left)//m, sum(k[1] for k in box_left)//m)
-        
-# 		low_right = (sum (k[0] for k in box_right)//m, 
-#                            sum(k[1] for k in box_right)//m)
-# 		if m > 5:
-# 			cv2.rectangle(draw_img, top_left, low_right, (255,255,0), 5)
-		cv2.rectangle(draw_img, top_left, low_right, (255,255,0), 5)
+		#Draw box
+		cv2.rectangle(draw_img, topLeft_current, lowRight_current, (255,255,0), 5)
 	return draw_img
 
 def main():
-	test_output = 'project_vid1.mp4'
+	test_output = 'project_vid.mp4'
 	clip1 = VideoFileClip('project_video.mp4')
 	test_clip = clip1.fl_image(pipeline)
 	test_clip.write_videofile(test_output, audio=False)
@@ -190,7 +178,7 @@ def main():
 # 	test_clip = clip1.fl_image(pipeline)
 # 	test_clip.write_videofile(test_output, audio=False)
 
-# 	print ('Done processing video')
+	print ('Done processing video')
 
 if __name__ == '__main__':
 	main()
