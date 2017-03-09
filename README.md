@@ -8,11 +8,11 @@ The scope of this project is to detect moving vehicle in a video. This is the 5t
 4. [Vehicle Datasets](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [Non Vehicle Datasets](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip)
 
 ### Files
-`vehicle_detection.py` : contain classifier of vehicle and non-vehicle training
+`svm_classifier.py`: contains classifier training for vehicle and non-vehicle.
 
 `feature_functions.py`: contains help code to extract features
 
-`svm_classifier.py`: contains pipeline to detect vehicle in video
+`vehicle_detection.py`: contains pipeline to detect vehicle in video
 
 ### Goals
 1. Apply Histogram of Oriented Gradients to extract object features for classification training.
